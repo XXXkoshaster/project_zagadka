@@ -36,7 +36,7 @@ def main():
     
     if response:
         with open('data.json', 'w') as data:
-            json.dump(response, data)
+            json.dump(response[0], data)
 
 if __name__ == '__main__':
     main()
