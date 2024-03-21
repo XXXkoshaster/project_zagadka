@@ -4,40 +4,51 @@ import os
 from dotenv import load_dotenv
 import re 
 
-#
-load_dotenv()
 
-TOKEN = os.getenv('API_KEY')
-#
+class ID:
+    @staticmethod
+    def extract_user_id(url):
+        match = re.search(r'vk.com/(\w+)', url)
+        if not match:
+            print("Некорректный URL.")
+            return None
+        return match.group(1)
 
-#
-URL = input("Введите URL профиль Вконтакте: ")
+class VkProfile:
+    def __init__(self, token):
+        self.session = vk_api.VkApi(token=token)
+        self.api = self.session.get_api()
 
-match = re.search(r'vk.com/(\w+)', URL)
-if not match:
-    print("Некорректный URL.")
-    exit()
-    
-ID = match.group(1)
-#
+    def get_usser_info(self, user_id):
+        try:
+            return self.api.users.get(user_ids=user_id, fields='bdate, city, country')
+        except vk_api.ApiError as e:
+            print(f"Ошибка API вконтакте: {e}")
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")
 
-def main():
-    vk_session = vk_api.VkApi(token=TOKEN)
-    vk = vk_session.get_api()
-    
-    try:
-        response = vk.users.get(user_ids=ID, fields='bdate, city, country')
-    except vk_api.ApiError as e:
-        print(f"Ошибка API вконтакте: {e}")
-        return
-    except Exception as e:
-        print(f"Произошла ошибка: {e}")
-        return
-    
-    if response:
-        response[0]['URL'] = URL
-        with open('data.json', 'w') as data:
-            json.dump(response[0], data)
+class File:
+    @staticmethod
+    def save_data(file_path, data):
+        with open(file_path, 'w') as file:
+            json.dump(data, file)
+
+class VkApp:
+    def __init__(self):
+        load_dotenv()
+        self.token = os.getenv('API_KEY')
+        self.vk = VkProfile(self.token)
+
+    def run(self):
+        url = input("Введите URL профиль Вконтакте: ")
+        user_id = ID.extract_user_id(url)
+
+        if user_id:
+            response = self.vk.get_usser_info(user_id)
+            if response:
+                response[0]['URL'] = url
+                File.save_data('data.json', response[0])
 
 if __name__ == '__main__':
-    main()
+    app = VkApp()
+    app.run()
