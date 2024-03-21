@@ -20,9 +20,17 @@ class VkProfile:
         self.session = vk_api.VkApi(token=token)
         self.api = self.session.get_api()
 
-    def get_usser_info(self, user_id):
+    def get_user_info(self, user_id):
         try:
-            return self.api.users.get(user_ids=user_id, fields="bdate, city, country")
+            return self.api.users.get(user_ids=user_id, fields="sex, bdate, city, country")
+        except vk_api.ApiError as e:
+            print(f"Ошибка API вконтакте: {e}")
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")
+
+    def get_friends_info(self, user_id):
+        try:
+            return self.api.friends.get(user_id=user_id, fields="sex, bdate, city, country")
         except vk_api.ApiError as e:
             print(f"Ошибка API вконтакте: {e}")
         except Exception as e:
@@ -48,10 +56,11 @@ class VkApp:
         user_id = ID.extract_user_id(url)
 
         if user_id:
-            response = self.vk.get_usser_info(user_id)
-            if response:
-                response[0]["URL"] = url
-                File.save_data("data.json", response[0])
+            response_1 = self.vk.get_user_info(user_id)
+            response_2 = self.vk.get_friends_info(user_id)
+            response_1[0]["URL"] = url
+            File.save_data("user_data.json", response_1[0])
+            print("friends_data.json", response_2)
 
 
 #объединение в общий скрипт
