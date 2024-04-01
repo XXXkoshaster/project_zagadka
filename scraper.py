@@ -25,9 +25,18 @@ class VkUser(VkProfile):
         try:
             return self.api.users.get(user_ids=user_id, fields="bdate, city, country")
         except vk_api.ApiError as e:
-            print(f"Ошибка API вконтакте: {e}")
+            print(f"Ошибка API вконтакте при запросе информации о пользователе: {e}")
         except Exception as e:
-            print(f"Произошла ошибка: {e}")
+            print(f"Произошла ошибка при запросе информации о пользователе: {e}")
+
+class VkFriends(VkProfile):
+    def get_friends_info(self, user_id):
+        try:
+            return self.api.friends.get(user_id=user_id, fields="bdate, city, country")
+        except vk_api.ApiError as e:
+            print(f"Ошибка API вконтакте при запросе информации о друзьх пользователя: {e}")
+        except Exception as e:
+            print(f"Произошла ошибка при запросе информации о друзьх пользователя: {e}")
 
 #класс для сохранения инфромации о пользователе в файл json
 class File:
@@ -43,16 +52,20 @@ class VkApp:
         load_dotenv()
         self.token = os.getenv("API_KEY")
         self.user = VkUser(self.token)
+        self.friends = VkFriends(self.token)
 
     def run(self):
         url = input("Введите URL профиль Вконтакте: ")
-        user_id = ID.get_user_id(url)
+        user_name = ID.get_user_id(url)
+        user_id = self.user.get_user_info(user_name)[0]["id"]
 
         if user_id:
-            response = self.user.get_user_info(user_id)
-            if response:
-                response[0]["URL"] = url
-                File.save_data("user_data.json", response[0])
+            user_data = self.user.get_user_info(user_id)
+            friends_data = self.friends.get_friends_info(user_id)
+            user_data[0]["URL"] = url
+            File.save_data("user_data.json", user_data[0])
+            File.save_data("friends_data.json", friends_data)
+            print(type(friends_data), type(user_data[0]))
 
 
 #объединение в общий скрипт
