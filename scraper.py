@@ -44,7 +44,7 @@ class VkFriends(VkProfile):
 class VkGroups(VkProfile):
     def get_groups_info(self, user_id):
         try:
-            return self.api.groups.get(user_id=user_id, extended=1, fields="activity, city, country, site")
+            return self.api.groups.get(user_id=user_id, extended=1, fields="activity, city, country")
         except vk_api.ApiError as e:
             print(f"Ошибка API вконтакте при запросе информации о сообщестах пользователя: {e}")
         except Exception as e:
