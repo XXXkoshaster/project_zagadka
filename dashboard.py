@@ -100,6 +100,20 @@ class DashboardBuilder:
             )
         ])
     
+    def build_map_friends(self, data):
+        data['Latitude'], data['Longitude'] = zip(*data['City'].apply(self.get_coordinates))
+        
+        fig = px.scatter_geo(data,
+                    lat="Latitude",
+                    lon="Longitude",
+                    size="Count",
+                    projection="natural earth",
+                    hover_name="City")
+    
+        return html.Div([
+            dcc.Graph(figure=fig)
+        ])
+
     def build_first_color_picker(self):
         @self.app.callback(
             Output('histogram', 'figure'),
@@ -134,6 +148,16 @@ class DashboardBuilder:
                     json = self.load_data('friends_data.json')
                     data = self.getAgesFriends(json)
                     return self.build_ages_friends(data)
+                
+                elif selected_info == 'Gender of friends':
+                    json = self.load_data('friends_data.json')
+                    data = self.getGendersFriends(json)
+                    return self.build_genders_friends(data)
+                
+                elif selected_info == 'Cites of friends':
+                    json = self.load_data('friends_data.json')
+                    data = self.getCitiesFriends(json)
+                    return self.build_map_friends(data)
 
             return html.Div()
 
