@@ -100,6 +100,24 @@ class DashboardBuilder:
             )
         ])
     
+    def build_interests(self, data):
+        data_json = data.to_json(date_format='iso', orient='split', default_handler=str)    
+        return  html.Div([
+            dcc.Dropdown(
+                id='third_color_picker',
+                options=[{'label': color, 'value': color} for color in ['blue', 'red', 'yellow', 'green']],
+                value='blue',
+                clearable=False
+            ),
+            dcc.Graph(
+                id = 'bar'
+            ),
+            dcc.Store(
+                id='third_store',
+                data=data_json
+            )
+        ])
+
     def build_stats(self, data, table):
         data_json = data.to_json(date_format='iso', orient='split', default_handler=str)    
         return  html.Div([
@@ -168,6 +186,19 @@ class DashboardBuilder:
             fig = px.scatter(stored_data_df, x='Mounth', y='Count posts', color_discrete_sequence=[selected_color])
 
             return fig
+    
+    def build_third_color_picker(self):
+        @self.app.callback(
+            Output('bar', 'figure'),
+            [Input('third_color_picker', 'value'),
+            State('third_store', 'data')]
+        )
+
+        def update_bar(selected_color, stored_data_json):
+            stored_data_df = pd.read_json(stored_data_json, orient='split')
+            fig = px.bar(stored_data_df, x='Activities', y='States', color_discrete_sequence=[selected_color])
+
+            return fig
 
     def build_callbacks(self):
         @self.app.callback(
@@ -206,6 +237,12 @@ class DashboardBuilder:
                     data = self.getToxic(json)
                     table = self.getMarks(json)
                     return self.build_stats(data, table)
+                
+                elif selected_info == 'Interests':
+                    json = self.load_data('groups_data.json')
+                    data = self.getInterests(json)
+                    return self.build_interests(data)
+
 
             return html.Div()
 
@@ -349,7 +386,7 @@ class DashboardBuilder:
         self.build_callbacks()
         self.build_first_color_picker()
         self.build_second_color_picker()
-
+        self.build_third_color_picker()
         self.app.run_server(debug=True)             
 
 if __name__ == "__main__":
