@@ -11,9 +11,8 @@ import sys
 class DashboardBuilder:
     def __init__(self, filepath):
         self.filepath = filepath
-        self.json = self.load_data()
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-        self.data = pd.DataFrame(self.json)
+
         
     def load_data(self):
         with open(self.filepath) as f:
@@ -53,12 +52,12 @@ class DashboardBuilder:
         
         ], style={"fontSize": "20px"})
     
-    def build_user_info(self):
+    def build_user_info(self, data):
         return html.Div([html.Br(),
             dash_table.DataTable(
                 id='table',
-                columns=[{"name": i, "id": i} for i in self.data.columns],
-                data=self.data.to_dict('records'),
+                columns=[{"name": i, "id": i} for i in data.columns],
+                data=data.to_dict('records'),
             )
         ])
     
@@ -78,12 +77,12 @@ class DashboardBuilder:
         )
         def process_url(n_clicks, selected_info, url):
             if n_clicks > 0 and url:
-                subprocess.run([sys.executable, 'scraper.py', url], check=True, stdout=subprocess.PIPE)
-                self.json = self.load_data()
-                self.data = pd.DataFrame(self.json)
+                subprocess.run([sys.executable, 'test.py', url], check=True, stdout=subprocess.PIPE)
+                json = self.load_data()
+                data = pd.DataFrame(json)
                 
                 if selected_info == 'Data user':
-                    return self.build_user_info()
+                    return self.build_user_info(data)
                 elif selected_info == 'Project info':
                     return self.build_project_info()
 
@@ -92,9 +91,9 @@ class DashboardBuilder:
     def run(self):
         self.build_layout() 
         self.build_callbacks()
-        self.app.run_server(debug=True)
-
+        self.app.run_server(debug=True)             
 
 if __name__ == "__main__":
     Page_instance = DashboardBuilder('user_data.json')
     Page_instance.run()
+
