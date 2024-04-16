@@ -5,13 +5,14 @@ import dash_bootstrap_components as dbc
 import pandas as pd 
 import subprocess
 import sys
+import plotly.express as px
 from datetime import datetime
 from geopy.geocoders import Nominatim
 
 # класс создает интерфейс страницы
 class DashboardBuilder:
     def __init__(self):
-        self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+        self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
         self.geolocator = Nominatim(user_agent="geoapiExercises")
         self.cache = dict()        
 
@@ -41,10 +42,15 @@ class DashboardBuilder:
                 dcc.Dropdown(
                     id='info_dropdown', 
                     options=[
-                        {'label': user, 'value': user} for user in ['Data user', 'Project info']
+                        {'label': user, 'value': user} for user in ['Data user', 'Ages of friends', 'Gender of friends', 'Cites of friends', 'Static', 'Interests']
                     ],
                 ),  
                
+                dcc.Loading(
+                    id="loading-info-output",
+                    children=[html.Div(id="info_output")],
+                    type="default",
+                ),
 
                 html.Br(),
 
@@ -53,7 +59,8 @@ class DashboardBuilder:
         ], style={"fontSize": "20px"})
     
     def build_user_info(self, data):
-        return html.Div([html.Br(),
+        return html.Div([
+            html.Br(),
             dash_table.DataTable(
                 id='table',
                 data=data.to_dict('records'),
@@ -61,6 +68,12 @@ class DashboardBuilder:
             )
         ])
 
+    def build_genders_friends(self, data):
+        return html.Div([
+            dcc.Graph(
+                figure=px.pie(names=data.keys(), values=data.values())
+            )
+        ])
     
     def build_project_info(self):
         return html.Div([
@@ -69,7 +82,37 @@ class DashboardBuilder:
             html.P(["GitHub repo: ", html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
         ])
     
+    def build_ages_friends(self, data):
+        data_json = data.to_json(date_format='iso', orient='split', default_handler=str)    
+        return  html.Div([
+            dcc.Dropdown(
+                id='first_color_picker',
+                options=[{'label': color, 'value': color} for color in ['blue', 'red', 'yellow', 'green']],
+                value='blue',
+                clearable=False
+            ),
+            dcc.Graph(
+                id = 'histogram'
+            ),
+            dcc.Store(
+                id='first_store',
+                data=data_json
+            )
+        ])
+    
+    def build_first_color_picker(self):
+        @self.app.callback(
+            Output('histogram', 'figure'),
+            [Input('first_color_picker', 'value'),
+            State('first_store', 'data')]
+        )
 
+        def update_histogram(selected_color, stored_data_json):
+            stored_data_df = pd.read_json(stored_data_json, orient='split')
+            fig = px.histogram(stored_data_df, x='Age', y='Count', color_discrete_sequence=[selected_color], nbins=14)
+
+            return fig
+    
     def build_callbacks(self):
         @self.app.callback(
             Output('info_output', 'children'),
@@ -80,13 +123,17 @@ class DashboardBuilder:
 
         def process_url(n_clicks, selected_info, url):
             if n_clicks > 0 and url:
-                subprocess.run([sys.executable, 'test.py', url], check=True, stdout=subprocess.PIPE)
+                subprocess.run([sys.executable, 'scraper.py', url], check=True, stdout=subprocess.PIPE)
                 
                 if selected_info == 'Data user':
                     json = self.load_data('user_data.json')
                     data = self.getUserInfo(json)
                     return self.build_user_info(data)
                 
+                elif selected_info == 'Ages of friends':
+                    json = self.load_data('friends_data.json')
+                    data = self.getAgesFriends(json)
+                    return self.build_ages_friends(data)
 
             return html.Div()
 
@@ -184,7 +231,7 @@ class DashboardBuilder:
 
         return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
 
-    def get_coordinates(self, city):
+    def getCoordinates(self, city):
         if city in self.cache:
             return self.cache[city]
             
@@ -225,11 +272,11 @@ class DashboardBuilder:
         return interests
     
     def run(self):
-        self.build_layout() 
+        self.build_layout()
         self.build_callbacks()
+        self.build_first_color_picker()
         self.app.run_server(debug=True)             
 
 if __name__ == "__main__":
     Page_instance = DashboardBuilder()
     Page_instance.run()
-
