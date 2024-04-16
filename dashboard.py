@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd 
 import subprocess
 import sys
-
+from datetime import datetime
 
 # класс создает интерфейс страницы
 class DashboardBuilder:
@@ -43,7 +43,6 @@ class DashboardBuilder:
                     ],
                 ),  
                
-                html.Div(id='info_output'),
 
                 html.Br(),
 
@@ -59,6 +58,7 @@ class DashboardBuilder:
                 columns=[{"name": i, "id": i} for i in data.columns]
             )
         ])
+
     
     def build_project_info(self):
         return html.Div([
@@ -66,6 +66,7 @@ class DashboardBuilder:
             html.P("Web server for analysing data vk users."),
             html.P(["GitHub repo: ", html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
         ])
+    
 
     def build_callbacks(self):
         @self.app.callback(
@@ -74,6 +75,7 @@ class DashboardBuilder:
             Input('info_dropdown', 'value')],
             [State('input_link', 'value')]
         )
+
         def process_url(n_clicks, selected_info, url):
             if n_clicks > 0 and url:
                 subprocess.run([sys.executable, 'test.py', url], check=True, stdout=subprocess.PIPE)
@@ -83,8 +85,6 @@ class DashboardBuilder:
                     data = self.getUserInfo(json)
                     return self.build_user_info(data)
                 
-                elif selected_info == 'Project info':
-                    return self.build_project_info()
 
             return html.Div()
 
@@ -117,6 +117,27 @@ class DashboardBuilder:
 
         return seria.to_frame(name='values').T
     
+    def getAgesFriends(self, friends):
+        ages = dict()
+
+        for i in friends:
+            if "bdate" in i.keys():
+                year = i["bdate"].split('.')
+                if len(year) == 3:
+                    age = datetime.now().year - int(year[2]) 
+                    if age not in ages:
+                        ages[age] = 1
+                    else: 
+                        ages[age] += 1
+                else:
+                    continue
+            else:
+                continue
+       
+        ages = pd.DataFrame(ages.items(),columns=['Age', 'Count'])
+        
+        return ages[(ages['Age'] > 5) & (ages['Age'] < 90)]
+ 
     def run(self):
         self.build_layout() 
         self.build_callbacks()
