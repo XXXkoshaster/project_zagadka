@@ -6,13 +6,15 @@ import pandas as pd
 import subprocess
 import sys
 from datetime import datetime
+from geopy.geocoders import Nominatim
 
 # класс создает интерфейс страницы
 class DashboardBuilder:
     def __init__(self):
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+        self.geolocator = Nominatim(user_agent="geoapiExercises")
+        self.cache = dict()        
 
-        
     def load_data(self, filepath):
         with open(filepath) as f:
             return json.load(f)
@@ -181,6 +183,18 @@ class DashboardBuilder:
                 toxic[date] += 1
 
         return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
+
+    def get_coordinates(self, city):
+        if city in self.cache:
+            return self.cache[city]
+            
+        else:
+            location = self.geolocator.geocode(city)
+            if location:
+                self.cache[city] = (location.latitude, location.longitude)
+                return self.cache[city]
+            else:
+                return None, None
     
     def run(self):
         self.build_layout() 
