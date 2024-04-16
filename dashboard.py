@@ -196,6 +196,20 @@ class DashboardBuilder:
             else:
                 return None, None
     
+    def getMarks(self, wall):
+        likes = 0
+        comments = 0
+        views = 0
+        reposts = 0
+
+        for i in wall:
+            likes += i["likes"]["count"]
+            comments += i["comments"]["count"]
+            views += i["views"]["count"]
+            reposts += i["reposts"]["count"]
+
+        return pd.DataFrame({'stats': ['likes', 'comments', 'views', 'reposts'], 'values':[likes, comments, views, reposts]})
+    
     def run(self):
         self.build_layout() 
         self.build_callbacks()
