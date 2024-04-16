@@ -170,6 +170,18 @@ class DashboardBuilder:
         cities = pd.DataFrame(cities.items(), columns=['City', 'Count'])
         return cities
 
+    def getToxic(self, wall):
+        toxic = dict()
+
+        for i in wall:
+            date = i["date"][:7]
+            if date not in toxic:
+                toxic[date] = 1
+            else: 
+                toxic[date] += 1
+
+        return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
+    
     def run(self):
         self.build_layout() 
         self.build_callbacks()
