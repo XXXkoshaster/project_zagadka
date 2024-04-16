@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import re
 from datetime import datetime
+import sys
 
 #класс для получения ID пользователя. Класс обрабатывает введенный URL и извлекает из него ID при помощи регулярных выражений 
 class ID:
@@ -51,7 +52,7 @@ class VkProfile:
 #метод для получения информации о друзьях пользователя
     def get_wall_info(self, user_id, domain):
         try:
-            return self.api.wall.get(user_id=user_id, domain=domain, filter=all)
+            return self.api.wall.get(user_id=user_id, domain=domain, count=100, filter=all)
         except vk_api.ApiError as e:
             print(f"Ошибка API вконтакте при запросе информации о стене пользователя: {e}")
         except Exception as e:
@@ -86,7 +87,7 @@ class VkApp:
             object["sex"] = None
 
     def run(self):
-        url = "https://vk.com/id110139244"
+        url = sys.argv[1]
         user_name = ID.get_user_id(url)
         user_id = self.profile.get_user_info(user_name)[0]["id"]
         user_domain = self.profile.get_user_info(user_name)[0]["domain"]
@@ -106,8 +107,7 @@ class VkApp:
             #
     
             for i in wall_data["items"]:
-                for j in i["copy_history"]:
-                    self.time_convertor(j)
+                self.time_convertor(i)
 
             File.save_data("user_data.json", user_data[0])
             File.save_data("friends_data.json", friends_data["items"])
