@@ -138,6 +138,21 @@ class DashboardBuilder:
         
         return ages[(ages['Age'] > 5) & (ages['Age'] < 90)]
  
+    def getGendersFriends(self, friends):
+        genders = dict()
+
+        for i in friends:
+            sex = i["sex"]
+            if sex:
+                if sex not in genders:
+                    genders[sex] = 1
+                else:
+                    genders[sex] += 1
+            else:
+                continue
+
+        return genders 
+    
     def run(self):
         self.build_layout() 
         self.build_callbacks()
