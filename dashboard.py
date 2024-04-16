@@ -54,9 +54,12 @@ class App:
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
         data = Data("data.json")
         dashboard_builder = DashboardBuilder(data)
-        
+        self.app.layout = dashboard_builder.build_layout()
 
+    def run(self):
+        self.app.run_server(debug=True)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app_instance = App()
+    app_instance.run()
