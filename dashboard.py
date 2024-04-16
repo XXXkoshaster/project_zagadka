@@ -9,13 +9,12 @@ import sys
 
 # класс создает интерфейс страницы
 class DashboardBuilder:
-    def __init__(self, filepath):
-        self.filepath = filepath
+    def __init__(self):
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
         
-    def load_data(self):
-        with open(self.filepath) as f:
+    def load_data(self, filepath):
+        with open(filepath) as f:
             return json.load(f)
     
     def build_layout(self):
@@ -56,8 +55,8 @@ class DashboardBuilder:
         return html.Div([html.Br(),
             dash_table.DataTable(
                 id='table',
-                columns=[{"name": i, "id": i} for i in data.columns],
                 data=data.to_dict('records'),
+                columns=[{"name": i, "id": i} for i in data.columns]
             )
         ])
     
@@ -78,22 +77,52 @@ class DashboardBuilder:
         def process_url(n_clicks, selected_info, url):
             if n_clicks > 0 and url:
                 subprocess.run([sys.executable, 'test.py', url], check=True, stdout=subprocess.PIPE)
-                json = self.load_data()
-                data = pd.DataFrame(json)
                 
                 if selected_info == 'Data user':
+                    json = self.load_data('user_data.json')
+                    data = self.getUserInfo(json)
                     return self.build_user_info(data)
+                
                 elif selected_info == 'Project info':
                     return self.build_project_info()
 
             return html.Div()
 
+    def getUserInfo(self, data):
+        data_general = pd.Series(data, index=["id", "domain", "first_name", "last_name", "sex", "bdate"])
+        data_country = pd.Series(data["country"]["title"], index=["country"])
+        data_city = pd.Series(data["city"]["title"], index=["city"])
+        data_univer = pd.Series()
+        data_schools = pd.Series()
+
+        for i in data["universities"]:
+            tmp = pd.Series(i, index=["name", "faculty_name", "chair_name", "graduation"])
+            tmp["faculty_name"] = tmp["faculty_name"].rstrip()
+            tmp.rename(index={"name": "university"}, inplace=True)
+            data_univer = pd.concat([data_univer, tmp])
+        
+
+        for i in data["schools"]:
+            tmp = pd.Series(i, index=["name", "class", "speciality", "year_from", "year_to"])
+            
+            if "колледж" in i["name"].lower():
+                tmp.rename(index={"name": "kollage"}, inplace=True)
+            else:
+                tmp.rename(index={"name": "school"}, inplace=True)
+
+            data_schools= pd.concat([data_schools, tmp])
+
+        data_schools = data_schools[data_schools.notna()]
+        seria = pd.concat([data_general, data_country, data_city, data_schools, data_univer])
+
+        return seria.to_frame(name='values').T
+    
     def run(self):
         self.build_layout() 
         self.build_callbacks()
         self.app.run_server(debug=True)             
 
 if __name__ == "__main__":
-    Page_instance = DashboardBuilder('user_data.json')
+    Page_instance = DashboardBuilder()
     Page_instance.run()
 
