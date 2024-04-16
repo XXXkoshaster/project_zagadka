@@ -153,6 +153,23 @@ class DashboardBuilder:
 
         return genders 
     
+    def getCitiesFriends(self, friends):    
+        cities = dict()
+
+        for i in friends:
+            if "city" in i.keys():
+                city = i["city"]["title"]
+                
+                if city not in cities:
+                    cities[city] = 1
+                else:
+                    cities[city] += 1
+            else:
+                continue
+        
+        cities = pd.DataFrame(cities.items(), columns=['City', 'Count'])
+        return cities
+
     def run(self):
         self.build_layout() 
         self.build_callbacks()
