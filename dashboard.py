@@ -27,15 +27,19 @@ class DashboardBuilder:
                 
                 html.Div([
                     dcc.Input(
+                        id='input_link',
                         type='text',
                         placeholder='Put your URL'
                     ), 
                     html.Button(
-                        'Submit'
+                        'Submit',
+                        id='button',
+                        n_clicks=0,
                     )
                 ]),  
 
                 dcc.Dropdown(
+                    id='info_dropdown', 
                     options=[
                         {'label': user, 'value': user} for user in ['Data user', 'Project info']
                     ],
@@ -64,6 +68,26 @@ class DashboardBuilder:
             html.P("Web server for analysing data vk users."),
             html.P(["GitHub repo: ", html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
         ])
+
+    def build_callbacks(self):
+        @self.app.callback(
+            Output('info_output', 'children'),
+            [Input('button', 'n_clicks'),
+            Input('info_dropdown', 'value')],
+            [State('input_link', 'value')]
+        )
+        def process_url(n_clicks, selected_info, url):
+            if n_clicks > 0 and url:
+                subprocess.run([sys.executable, 'scraper.py', url], check=True, stdout=subprocess.PIPE)
+                self.json = self.load_data()
+                self.data = pd.DataFrame(self.json)
+                
+                if selected_info == 'Data user':
+                    return self.build_user_info()
+                elif selected_info == 'Project info':
+                    return self.build_project_info()
+
+            return html.Div()
 
     def run(self):
         self.build_layout() 
