@@ -210,6 +210,20 @@ class DashboardBuilder:
 
         return pd.DataFrame({'stats': ['likes', 'comments', 'views', 'reposts'], 'values':[likes, comments, views, reposts]})
     
+    def getInterests(self, groups):
+        interests = dict()
+
+        for i in groups:
+            act = i["activity"]
+            if act not in interests:
+                interests[act] = 1
+            else:
+                interests[act] += 1
+
+        interests = pd.DataFrame(interests.items(), columns=["Activities", "States"])
+
+        return interests
+    
     def run(self):
         self.build_layout() 
         self.build_callbacks()
