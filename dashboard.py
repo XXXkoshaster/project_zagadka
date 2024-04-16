@@ -1,65 +1,76 @@
 import dash
+from dash import dash_table, html, dcc, Output, Input, State
 import json
-from dash import html 
 import dash_bootstrap_components as dbc
+import pandas as pd 
+import subprocess
+import sys
 
-class Data:
+
+# класс создает интерфейс страницы
+class DashboardBuilder:
     def __init__(self, filepath):
         self.filepath = filepath
-        self.data = self.load_data()
-
+        self.json = self.load_data()
+        self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+        self.data = pd.DataFrame(self.json)
+        
     def load_data(self):
         with open(self.filepath) as f:
             return json.load(f)
-
-class DashboardBuilder:
-    def __init__(self, data):
-        self.data = data
-
+    
     def build_layout(self):
-        return html.Div([
+        self.app.layout = html.Div([
                 html.H1(children="PROJECT ZAGADKA", style={"color": "blue", "fontSize": "40px"}),
+                
                 html.H2("VK scraper"),
-                self.build_tabs()
+                
+                html.Div([
+                    dcc.Input(
+                        type='text',
+                        placeholder='Put your URL'
+                    ), 
+                    html.Button(
+                        'Submit'
+                    )
+                ]),  
+
+                dcc.Dropdown(
+                    options=[
+                        {'label': user, 'value': user} for user in ['Data user', 'Project info']
+                    ],
+                ),  
+               
+                html.Div(id='info_output'),
+
+                html.Br(),
+
+                dbc.Tabs([dbc.Tab(self.build_project_info(), label="Project info")])
+        
         ], style={"fontSize": "20px"})
     
-    def build_tabs(self):
-        return dbc.Tabs([
-            dbc.Tap(self.build_user_info(), label="Data user"),
-            dbc.Tap(self.build_project_info(), label="Projecy info")
-        ])
-    
     def build_user_info(self):
-        return html.Ul([
-            html.Br(),
-            html.Li(f"ID of user: {self.data['id']}"),
-            html.Li(f"Birthday date of user: {self.data['bdate']}"),
-            html.Li(f"City of user: {self.data['city']['title']}"),
-            html.Li(f"Country of user: {self.data['country']['title']}"),
-            html.Li(f"First name of user: {self.data['first_name']}"),
-            html.Li(f"Last name of user: {self.data['last_name']}"),
-            html.Li(f"Accaunt of user is closed: {self.data['is_closed']}"),
-            html.Li(["URL of account: ", html.A(self.data["URL"], href=self.data["URL"])])
+        return html.Div([html.Br(),
+            dash_table.DataTable(
+                id='table',
+                columns=[{"name": i, "id": i} for i in self.data.columns],
+                data=self.data.to_dict('records'),
+            )
         ])
     
     def build_project_info(self):
         return html.Div([
             html.Br(),
-            html.P("Web server for analising data vk users."),
-            html.P(["Git hub repo: ", html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
+            html.P("Web server for analysing data vk users."),
+            html.P(["GitHub repo: ", html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
         ])
 
-class App:
-    def __init__(self):
-        self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-        data = Data("data.json")
-        dashboard_builder = DashboardBuilder(data)
-        self.app.layout = dashboard_builder.build_layout()
-
     def run(self):
+        self.build_layout() 
+        self.build_callbacks()
         self.app.run_server(debug=True)
 
 
 if __name__ == "__main__":
-    app_instance = App()
-    app_instance.run()
+    Page_instance = DashboardBuilder('user_data.json')
+    Page_instance.run()
