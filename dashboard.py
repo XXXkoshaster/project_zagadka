@@ -117,7 +117,7 @@ class DashboardBuilder:
                 data=data_json
             )
         ])
-
+    
     def build_stats(self, data, table):
         data_json = data.to_json(date_format='iso', orient='split', default_handler=str)    
         return  html.Div([
@@ -146,7 +146,7 @@ class DashboardBuilder:
                 columns=[{"name": i, "id": i} for i in table.columns]
             )
         ])
-
+    
     def build_map_friends(self, data):
         data['Latitude'], data['Longitude'] = zip(*data['City'].apply(self.get_coordinates))
         
@@ -186,7 +186,7 @@ class DashboardBuilder:
             fig = px.scatter(stored_data_df, x='Mounth', y='Count posts', color_discrete_sequence=[selected_color])
 
             return fig
-    
+   
     def build_third_color_picker(self):
         @self.app.callback(
             Output('bar', 'figure'),
@@ -199,7 +199,7 @@ class DashboardBuilder:
             fig = px.bar(stored_data_df, x='Activities', y='States', color_discrete_sequence=[selected_color])
 
             return fig
-
+    
     def build_callbacks(self):
         @self.app.callback(
             Output('info_output', 'children'),
@@ -221,7 +221,7 @@ class DashboardBuilder:
                     json = self.load_data('friends_data.json')
                     data = self.getAgesFriends(json)
                     return self.build_ages_friends(data)
-                
+
                 elif selected_info == 'Gender of friends':
                     json = self.load_data('friends_data.json')
                     data = self.getGendersFriends(json)
@@ -242,8 +242,7 @@ class DashboardBuilder:
                     json = self.load_data('groups_data.json')
                     data = self.getInterests(json)
                     return self.build_interests(data)
-
-
+                
             return html.Div()
 
     def getUserInfo(self, data):
@@ -340,7 +339,7 @@ class DashboardBuilder:
 
         return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
 
-    def getCoordinates(self, city):
+    def get_coordinates(self, city):
         if city in self.cache:
             return self.cache[city]
             
@@ -382,7 +381,6 @@ class DashboardBuilder:
     
     def run(self):
         self.build_layout()
-        
         self.build_callbacks()
         self.build_first_color_picker()
         self.build_second_color_picker()
@@ -392,3 +390,4 @@ class DashboardBuilder:
 if __name__ == "__main__":
     Page_instance = DashboardBuilder()
     Page_instance.run()
+
