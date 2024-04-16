@@ -100,6 +100,35 @@ class DashboardBuilder:
             )
         ])
     
+    def build_stats(self, data, table):
+        data_json = data.to_json(date_format='iso', orient='split', default_handler=str)    
+        return  html.Div([
+            dcc.Dropdown(
+                id='second_color_picker',
+                options=[{'label': color, 'value': color} for color in ['blue', 'red', 'yellow', 'green']],
+                value='blue',
+                clearable=False
+            ),
+            html.Br(),
+            html.P(
+                'Статистика акнивности пользователя по месяцам за последнии 100 публикаций'
+            ),
+            dcc.Graph(
+                id = 'graph'
+            ),
+            dcc.Store(
+                id='second_store',
+                data=data_json
+            ),
+            html.Br(),
+            
+            dash_table.DataTable(
+                id='table',
+                data=table.to_dict('records'),
+                columns=[{"name": i, "id": i} for i in table.columns]
+            )
+        ])
+
     def build_map_friends(self, data):
         data['Latitude'], data['Longitude'] = zip(*data['City'].apply(self.get_coordinates))
         
@@ -127,6 +156,19 @@ class DashboardBuilder:
 
             return fig
     
+    def build_second_color_picker(self):
+        @self.app.callback(
+            Output('graph', 'figure'),
+            [Input('second_color_picker', 'value'),
+            State('second_store', 'data')]
+        )
+
+        def update_graph(selected_color, stored_data_json):
+            stored_data_df = pd.read_json(stored_data_json, orient='split')
+            fig = px.scatter(stored_data_df, x='Mounth', y='Count posts', color_discrete_sequence=[selected_color])
+
+            return fig
+
     def build_callbacks(self):
         @self.app.callback(
             Output('info_output', 'children'),
@@ -158,6 +200,12 @@ class DashboardBuilder:
                     json = self.load_data('friends_data.json')
                     data = self.getCitiesFriends(json)
                     return self.build_map_friends(data)
+                
+                elif selected_info == 'Static':
+                    json = self.load_data('wall_data.json')
+                    data = self.getToxic(json)
+                    table = self.getMarks(json)
+                    return self.build_stats(data, table)
 
             return html.Div()
 
@@ -297,8 +345,11 @@ class DashboardBuilder:
     
     def run(self):
         self.build_layout()
+        
         self.build_callbacks()
         self.build_first_color_picker()
+        self.build_second_color_picker()
+
         self.app.run_server(debug=True)             
 
 if __name__ == "__main__":
