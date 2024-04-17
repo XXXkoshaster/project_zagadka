@@ -5,7 +5,7 @@ from geopy.geocoders import Nominatim
 class UserProfileParser:
     def __init__(self):
         self.cache = {}  
-        self.geolocator = Nominatim(user_agent="your_app_name")  
+        self.geolocator = Nominatim(user_agent="geoapiExercises")  
 
     def get_user_info(self, data):
         try:
@@ -54,11 +54,10 @@ class UserProfileParser:
         try:
             data_schools = data_schools[data_schools.notna()]
             seria = pd.concat([data_general, data_country, data_city, data_schools, data_univer])
+            return seria.to_frame(name='values').reset_index()
         except Exception as e:
             print(f"Ошибка в обработке финальной даты: {e}")
-            seria = pd.Series()
-
-        return seria.to_frame(name='values').T
+            return pd.DataFrame(columns=['index', 'values'])
 
     def get_ages_friends(self, friends):
         try:
@@ -90,14 +89,15 @@ class UserProfileParser:
             genders = dict()
 
             for i in friends:
-                sex = i["sex"]
-                if sex:
-                    if sex not in genders:
-                        genders[sex] = 1
+                if "sex" in i.keys():    
+                    sex = i["sex"]
+                    if sex:
+                        if sex not in genders:
+                            genders[sex] = 1
+                        else:
+                            genders[sex] += 1
                     else:
-                        genders[sex] += 1
-                else:
-                    continue
+                        continue
 
             return genders 
         except Exception as e:
@@ -130,11 +130,12 @@ class UserProfileParser:
             toxic = dict()
 
             for i in wall:
-                date = i["date"][:7]
-                if date not in toxic:
-                    toxic[date] = 1
-                else: 
-                    toxic[date] += 1
+                if "date" in i.keys():
+                    date = i["date"][:7]
+                    if date not in toxic:
+                        toxic[date] = 1
+                    else: 
+                        toxic[date] += 1
 
             return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
         except Exception as e:
@@ -142,16 +143,19 @@ class UserProfileParser:
             return pd.DataFrame(lumns=['Mounth', 'Count posts'])
 
     def get_coordinates(self, city):
-        if city in self.cache:
-            return self.cache[city]
-            
-        else:
-            location = self.geolocator.geocode(city)
-            if location:
-                self.cache[city] = (location.latitude, location.longitude)
+        try:
+            if city in self.cache:
                 return self.cache[city]
             else:
-                return None, None
+                location = self.geolocator.geocode(city)
+                if location:
+                    self.cache[city] = (location.latitude, location.longitude)
+                    return self.cache[city]
+                else:
+                    return None, None
+        except Exception as e:
+            print(f"Ошибка при получении координат города {city}: {e}")
+            return None, None
 
     def get_marks(self, wall):
         try:
@@ -161,10 +165,17 @@ class UserProfileParser:
             reposts = 0
 
             for i in wall:
-                likes += i["likes"]["count"]
-                comments += i["comments"]["count"]
-                views += i["views"]["count"]
-                reposts += i["reposts"]["count"]
+                if "likes" in i.keys(): 
+                    likes += i["likes"]["count"]
+
+                if "comments" in i.keys():   
+                    comments += i["comments"]["count"]
+                
+                if "views" in i.keys():
+                    views += i["views"]["count"]
+
+                if "reposts" in i.keys():
+                    reposts += i["reposts"]["count"]
 
             return pd.DataFrame({'stats': ['likes', 'comments', 'views', 'reposts'], 'values':[likes, comments, views, reposts]})
         except Exception as e:
@@ -176,11 +187,12 @@ class UserProfileParser:
             interests = dict()
 
             for i in groups:
-                act = i["activity"]
-                if act not in interests:
-                    interests[act] = 1
-                else:
-                    interests[act] += 1
+                if "activity" in i.keys():
+                    act = i["activity"]
+                    if act not in interests:
+                        interests[act] = 1
+                    else:
+                        interests[act] += 1
 
             interests = pd.DataFrame(interests.items(), columns=["Activities", "States"])
             return interests

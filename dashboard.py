@@ -13,6 +13,7 @@ from scraper_json import UserProfileParser
 class DashboardBuilder:
     def __init__(self):
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+        self.parser = UserProfileParser()
 
     def load_data(self, filepath):
         with open(filepath) as f:
@@ -146,7 +147,7 @@ class DashboardBuilder:
         ])
     
     def build_map_friends(self, data):
-        data['Latitude'], data['Longitude'] = zip(*data['City'].apply(self.get_coordinates))
+        data['Latitude'], data['Longitude'] = zip(*data['City'].apply(self.parser.get_coordinates))
         
         fig = px.scatter_geo(data,
                     lat="Latitude",
@@ -212,33 +213,33 @@ class DashboardBuilder:
                 
                 if selected_info == 'Data user':
                     json = self.load_data('user_data.json')
-                    data = UserProfileParser.get_user_info(json)
+                    data = self.parser.get_user_info(json)
                     return self.build_user_info(data)
                 
                 elif selected_info == 'Ages of friends':
                     json = self.load_data('friends_data.json')
-                    data = UserProfileParser.get_ages_friends(json)
+                    data = self.parser.get_ages_friends(json)
                     return self.build_ages_friends(data)
 
                 elif selected_info == 'Gender of friends':
                     json = self.load_data('friends_data.json')
-                    data = UserProfileParser.get_genders_friends(json)
+                    data = self.parser.get_genders_friends(json)
                     return self.build_genders_friends(data)
                 
                 elif selected_info == 'Cites of friends':
                     json = self.load_data('friends_data.json')
-                    data = UserProfileParser.get_cities_friends(json)
+                    data = self.parser.get_cities_friends(json)
                     return self.build_map_friends(data)
                 
                 elif selected_info == 'Static':
                     json = self.load_data('wall_data.json')
-                    data = UserProfileParser.get_toxic(json)
-                    table = UserProfileParser.get_marks(json)
+                    data = self.parser.get_toxic(json)
+                    table = self.parser.get_marks(json)
                     return self.build_stats(data, table)
                 
                 elif selected_info == 'Interests':
                     json = self.load_data('groups_data.json')
-                    data = UserProfileParser.get_interests(json)
+                    data = self.parser.get_interests(json)
                     return self.build_interests(data)
                 
             return html.Div()
