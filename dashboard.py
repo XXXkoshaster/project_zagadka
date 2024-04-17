@@ -6,15 +6,13 @@ import pandas as pd
 import subprocess
 import sys
 import plotly.express as px
-from datetime import datetime
-from geopy.geocoders import Nominatim
+
+from scraper_json import UserProfileParser
 
 # класс создает интерфейс страницы
 class DashboardBuilder:
     def __init__(self):
         self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
-        self.geolocator = Nominatim(user_agent="geoapiExercises")
-        self.cache = dict()        
 
     def load_data(self, filepath):
         with open(filepath) as f:
@@ -214,171 +212,37 @@ class DashboardBuilder:
                 
                 if selected_info == 'Data user':
                     json = self.load_data('user_data.json')
-                    data = self.get_user_info(json)
+                    data = UserProfileParser.get_user_info(json)
                     return self.build_user_info(data)
                 
                 elif selected_info == 'Ages of friends':
                     json = self.load_data('friends_data.json')
-                    data = self.get_ages_friends(json)
+                    data = UserProfileParser.get_ages_friends(json)
                     return self.build_ages_friends(data)
 
                 elif selected_info == 'Gender of friends':
                     json = self.load_data('friends_data.json')
-                    data = self.get_genders_friends(json)
+                    data = UserProfileParser.get_genders_friends(json)
                     return self.build_genders_friends(data)
                 
                 elif selected_info == 'Cites of friends':
                     json = self.load_data('friends_data.json')
-                    data = self.get_cities_friends(json)
+                    data = UserProfileParser.get_cities_friends(json)
                     return self.build_map_friends(data)
                 
                 elif selected_info == 'Static':
                     json = self.load_data('wall_data.json')
-                    data = self.get_toxic(json)
-                    table = self.get_marks(json)
+                    data = UserProfileParser.get_toxic(json)
+                    table = UserProfileParser.get_marks(json)
                     return self.build_stats(data, table)
                 
                 elif selected_info == 'Interests':
                     json = self.load_data('groups_data.json')
-                    data = self.get_interests(json)
+                    data = UserProfileParser.get_interests(json)
                     return self.build_interests(data)
                 
             return html.Div()
-
-    def get_user_info(self, data):
-        data_general = pd.Series(data, index=["id", "domain", "first_name", "last_name", "sex", "bdate"])
-        data_country = pd.Series(data["country"]["title"], index=["country"])
-        data_city = pd.Series(data["city"]["title"], index=["city"])
-        data_univer = pd.Series()
-        data_schools = pd.Series()
-
-        for i in data["universities"]:
-            tmp = pd.Series(i, index=["name", "faculty_name", "chair_name", "graduation"])
-            tmp["faculty_name"] = tmp["faculty_name"].rstrip()
-            tmp.rename(index={"name": "university"}, inplace=True)
-            data_univer = pd.concat([data_univer, tmp])
         
-
-        for i in data["schools"]:
-            tmp = pd.Series(i, index=["name", "class", "speciality", "year_from", "year_to"])
-            
-            if "колледж" in i["name"].lower():
-                tmp.rename(index={"name": "kollage"}, inplace=True)
-            else:
-                tmp.rename(index={"name": "school"}, inplace=True)
-
-            data_schools= pd.concat([data_schools, tmp])
-
-        data_schools = data_schools[data_schools.notna()]
-        seria = pd.concat([data_general, data_country, data_city, data_schools, data_univer])
-
-        return seria.to_frame(name='values').T
-    
-    def get_ages_friends(self, friends):
-        ages = dict()
-
-        for i in friends:
-            if "bdate" in i.keys():
-                year = i["bdate"].split('.')
-                if len(year) == 3:
-                    age = datetime.now().year - int(year[2]) 
-                    if age not in ages:
-                        ages[age] = 1
-                    else: 
-                        ages[age] += 1
-                else:
-                    continue
-            else:
-                continue
-       
-        ages = pd.DataFrame(ages.items(),columns=['Age', 'Count'])
-        
-        return ages[(ages['Age'] > 5) & (ages['Age'] < 90)]
- 
-    def get_genders_friends(self, friends):
-        genders = dict()
-
-        for i in friends:
-            sex = i["sex"]
-            if sex:
-                if sex not in genders:
-                    genders[sex] = 1
-                else:
-                    genders[sex] += 1
-            else:
-                continue
-
-        return genders 
-    
-    def get_cities_friends(self, friends):    
-        cities = dict()
-
-        for i in friends:
-            if "city" in i.keys():
-                city = i["city"]["title"]
-                
-                if city not in cities:
-                    cities[city] = 1
-                else:
-                    cities[city] += 1
-            else:
-                continue
-        
-        cities = pd.DataFrame(cities.items(), columns=['City', 'Count'])
-        return cities
-
-    def get_toxic(self, wall):
-        toxic = dict()
-
-        for i in wall:
-            date = i["date"][:7]
-            if date not in toxic:
-                toxic[date] = 1
-            else: 
-                toxic[date] += 1
-
-        return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
-
-    def get_coordinates(self, city):
-        if city in self.cache:
-            return self.cache[city]
-            
-        else:
-            location = self.geolocator.geocode(city)
-            if location:
-                self.cache[city] = (location.latitude, location.longitude)
-                return self.cache[city]
-            else:
-                return None, None
-    
-    def get_marks(self, wall):
-        likes = 0
-        comments = 0
-        views = 0
-        reposts = 0
-
-        for i in wall:
-            likes += i["likes"]["count"]
-            comments += i["comments"]["count"]
-            views += i["views"]["count"]
-            reposts += i["reposts"]["count"]
-
-        return pd.DataFrame({'stats': ['likes', 'comments', 'views', 'reposts'], 'values':[likes, comments, views, reposts]})
-    
-    def get_interests(self, groups):
-        interests = dict()
-
-        for i in groups:
-            act = i["activity"]
-            if act not in interests:
-                interests[act] = 1
-            else:
-                interests[act] += 1
-
-        interests = pd.DataFrame(interests.items(), columns=["Activities", "States"])
-
-        return interests
-    
     def run(self):
         self.build_layout()
         self.build_callbacks()
