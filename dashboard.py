@@ -214,38 +214,38 @@ class DashboardBuilder:
                 
                 if selected_info == 'Data user':
                     json = self.load_data('user_data.json')
-                    data = self.getUserInfo(json)
+                    data = self.get_user_info(json)
                     return self.build_user_info(data)
                 
                 elif selected_info == 'Ages of friends':
                     json = self.load_data('friends_data.json')
-                    data = self.getAgesFriends(json)
+                    data = self.get_ages_friends(json)
                     return self.build_ages_friends(data)
 
                 elif selected_info == 'Gender of friends':
                     json = self.load_data('friends_data.json')
-                    data = self.getGendersFriends(json)
+                    data = self.get_genders_friends(json)
                     return self.build_genders_friends(data)
                 
                 elif selected_info == 'Cites of friends':
                     json = self.load_data('friends_data.json')
-                    data = self.getCitiesFriends(json)
+                    data = self.get_cities_friends(json)
                     return self.build_map_friends(data)
                 
                 elif selected_info == 'Static':
                     json = self.load_data('wall_data.json')
-                    data = self.getToxic(json)
-                    table = self.getMarks(json)
+                    data = self.get_toxic(json)
+                    table = self.get_marks(json)
                     return self.build_stats(data, table)
                 
                 elif selected_info == 'Interests':
                     json = self.load_data('groups_data.json')
-                    data = self.getInterests(json)
+                    data = self.get_interests(json)
                     return self.build_interests(data)
                 
             return html.Div()
 
-    def getUserInfo(self, data):
+    def get_user_info(self, data):
         data_general = pd.Series(data, index=["id", "domain", "first_name", "last_name", "sex", "bdate"])
         data_country = pd.Series(data["country"]["title"], index=["country"])
         data_city = pd.Series(data["city"]["title"], index=["city"])
@@ -274,7 +274,7 @@ class DashboardBuilder:
 
         return seria.to_frame(name='values').T
     
-    def getAgesFriends(self, friends):
+    def get_ages_friends(self, friends):
         ages = dict()
 
         for i in friends:
@@ -295,7 +295,7 @@ class DashboardBuilder:
         
         return ages[(ages['Age'] > 5) & (ages['Age'] < 90)]
  
-    def getGendersFriends(self, friends):
+    def get_genders_friends(self, friends):
         genders = dict()
 
         for i in friends:
@@ -310,7 +310,7 @@ class DashboardBuilder:
 
         return genders 
     
-    def getCitiesFriends(self, friends):    
+    def get_cities_friends(self, friends):    
         cities = dict()
 
         for i in friends:
@@ -327,7 +327,7 @@ class DashboardBuilder:
         cities = pd.DataFrame(cities.items(), columns=['City', 'Count'])
         return cities
 
-    def getToxic(self, wall):
+    def get_toxic(self, wall):
         toxic = dict()
 
         for i in wall:
@@ -351,7 +351,7 @@ class DashboardBuilder:
             else:
                 return None, None
     
-    def getMarks(self, wall):
+    def get_marks(self, wall):
         likes = 0
         comments = 0
         views = 0
@@ -365,7 +365,7 @@ class DashboardBuilder:
 
         return pd.DataFrame({'stats': ['likes', 'comments', 'views', 'reposts'], 'values':[likes, comments, views, reposts]})
     
-    def getInterests(self, groups):
+    def get_interests(self, groups):
         interests = dict()
 
         for i in groups:
