@@ -9,7 +9,7 @@ class VkProfile:
 #метод для получения информации о самом пользователе
     def get_user_info(self, user_id):
         try:
-            return self.api.users.get(user_ids=user_id, fields="domain, sex, bdate, city, country, site, contacts, activities, interests, career, schools, universities, occupation, movies, music, books, tv, relatives")
+            return self.api.users.get(user_ids=user_id, fields="domain, sex, bdate, city, country, site, activities, interests, schools, universities")
         except vk_api.ApiError as e:
             print(f"Ошибка API вконтакте при запросе информации о пользователе: {e}")
         except Exception as e:
@@ -18,7 +18,7 @@ class VkProfile:
 #метод для получения информации о друзьях пользователя:
     def get_friends_info(self, user_id):
         try:
-            return self.api.friends.get(user_id=user_id, fields="sex, bdate, city, country, site, contacts, activities, interests, career, schools, universities, occupation, movies, music, books, tv, relatives")
+            return self.api.friends.get(user_id=user_id, fields="sex, bdate, city, country, site, activities, interests, schools, universities")
         except vk_api.ApiError as e:
             print(f"Ошибка API вконтакте при запросе информации о друзьх пользователя: {e}")
         except Exception as e:
