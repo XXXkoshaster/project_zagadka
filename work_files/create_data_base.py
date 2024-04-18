@@ -1,8 +1,8 @@
 import os
 import dotenv 
 import sys
-from data_processor import DataProcessor
-from vk_profile import VkProfile
+from scraper.data_processor import DataProcessor
+from scraper.take_profile_info import VkProfile
 
 #класс создания приложения
 class VkApp:
@@ -28,10 +28,10 @@ class VkApp:
             DataProcessor.convert_friends_data(friends_data)    
             DataProcessor.convert_wall_data(wall_data)
 
-            DataProcessor.save_data("user_data.json", user_data[0])
-            DataProcessor.save_data("friends_data.json", friends_data["items"])
-            DataProcessor.save_data("groups_data.json", groups_data["items"])
-            DataProcessor.save_data("wall_data.json", wall_data["items"])
+            DataProcessor.save_data("/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/user_data.json", user_data[0])
+            DataProcessor.save_data("/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/friends_data.json", friends_data["items"])
+            DataProcessor.save_data("/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/groups_data.json", groups_data["items"])
+            DataProcessor.save_data("/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json", wall_data["items"])
 
 #объединение в общий скрипт
 if __name__ == "__main__":

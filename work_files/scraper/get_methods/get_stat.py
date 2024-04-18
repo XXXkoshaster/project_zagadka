@@ -1,6 +1,6 @@
 import pandas as pd
 
-def toxic_info(wall):
+def stat_info(wall):
         try:
             toxic = dict()
 

@@ -3,7 +3,7 @@ from dash import dash_table, html, dcc, Output, Input, State
 import dash_bootstrap_components as dbc
 import pandas as pd 
 import plotly.express as px
-from scraper_json import UserProfileParser
+from scraper.scraper_json import UserProfileParser
 
 class BuildGraphs():  
     def __init__(self):

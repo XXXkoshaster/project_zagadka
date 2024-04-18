@@ -1,13 +1,12 @@
-import pandas as pd
 from geopy.geocoders import Nominatim
-from get_user_info import user_info
-from get_ages_friends import ages_info
-from get_genders_friends import geenders_info
-from get_cities_friends import cities_info
-from get_toxic import toxic_info
-from get_coordinates import coord_info
-from get_marks import marks_info
-from get_interests import interests_info
+from scraper.get_methods.get_user_info import user_info
+from scraper.get_methods.get_ages_friends import ages_info
+from scraper.get_methods.get_genders_friends import geenders_info
+from scraper.get_methods.get_cities_friends import cities_info
+from scraper.get_methods.get_stat import stat_info
+from scraper.get_methods.get_coordinates import coord_info
+from scraper.get_methods.get_marks import marks_info
+from scraper.get_methods.get_interests import interests_info
 
 class UserProfileParser:
     def __init__(self):
@@ -26,8 +25,8 @@ class UserProfileParser:
     def get_cities_friends(self, friends):    
         return cities_info(friends)
 
-    def get_toxic(self, wall):
-        return toxic_info(wall)
+    def get_stat(self, wall):
+        return stat_info(wall)
     
     def get_coordinates(self, city):
         return coord_info(city, self.geolocator, self.cache)
