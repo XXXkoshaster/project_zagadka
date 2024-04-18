@@ -6,8 +6,8 @@ import pandas as pd
 import subprocess
 import sys
 import plotly.express as px
-
 from scraper_json import UserProfileParser
+from scraper import VkApp
 
 # класс создает интерфейс страницы
 class DashboardBuilder:
@@ -209,8 +209,11 @@ class DashboardBuilder:
 
         def process_url(n_clicks, selected_info, url):
             if n_clicks > 0 and url:
-                subprocess.run([sys.executable, 'scraper.py', url], check=True, stdout=subprocess.PIPE)
-                
+                try:
+                    VkApp(url)
+                except Exception as e:
+                    print(f"Ошибка при получении данных: {e}")
+                    
                 if selected_info == 'Data user':
                     json = self.load_data('user_data.json')
                     data = self.parser.get_user_info(json)
