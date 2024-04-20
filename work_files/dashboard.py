@@ -35,7 +35,7 @@ class DashboardBuilder(BuildGraphs):
                 dcc.Dropdown(
                     id="info_dropdown", 
                     options=[
-                        {"label": user, "value": user} for user in ["Data user", "Ages of friends", "Gender of friends", "Cites of friends", "Statistic", "Interests"]
+                        {"label": user, "value": user} for user in ["Data user", "Ages of friends", "Gender of friends", "Cites of friends", "Statistic", "Interests", "Toxicity"]
                     ],
                 ),  
                
@@ -98,14 +98,20 @@ class DashboardBuilder(BuildGraphs):
                     data = self.parser.get_interests(json)
                     return self.build_interests(data)
                 
+                elif selected_info == "Toxicity":
+                    json = self.load_data("/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json")
+                    data = self.parser.get_toxic(json)
+                    return self.build_toxicity(data)
+                
             return html.Div()
         
     def run(self):
         self.build_layout()
         self.build_callbacks()
-        self.build_first_color_picker()
-        self.build_second_color_picker()
-        self.build_third_color_picker()
+        self.build_ages_color_picker()
+        self.build_stats_color_picker()
+        self.build_interests_color_picker()
+        self.build_toxicity_color_picker()
         self.app.run_server(debug=True)             
 
 if __name__ == "__main__":
