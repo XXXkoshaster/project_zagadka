@@ -7,6 +7,7 @@ from scraper.get_methods.get_stat import stat_info
 from scraper.get_methods.get_coordinates import coord_info
 from scraper.get_methods.get_marks import marks_info
 from scraper.get_methods.get_interests import interests_info
+from scraper.get_methods.get_toxic import Toxic
 
 class UserProfileParser:
     def __init__(self):
@@ -36,3 +37,7 @@ class UserProfileParser:
     
     def get_interests(self, groups):
         return interests_info(groups)
+    
+    def get_toxic(self, wall):
+        toxic = Toxic()
+        return toxic.toxicity_info(wall)
