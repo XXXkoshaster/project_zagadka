@@ -14,5 +14,5 @@ def stat_info(wall):
 
             return pd.DataFrame(toxic.items(), columns=['Mounth', 'Count posts'])
         except Exception as e:
-            print(f"Ошибка в обработке токсичности пользователя: {e}")
+            print(f"Ошибка в обработке cтатистики пользователя: {e}")
             return pd.DataFrame(lumns=['Mounth', 'Count posts'])

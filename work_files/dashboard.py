@@ -35,7 +35,7 @@ class DashboardBuilder(BuildGraphs):
                 dcc.Dropdown(
                     id="info_dropdown", 
                     options=[
-                        {"label": user, "value": user} for user in ["Data user", "Ages of friends", "Gender of friends", "Cites of friends", "Statistic", "Interests", "Toxicity"]
+                        {"label": user, "value": user} for user in ["Data user", "Ages of friends", "Gender of friends", "Cites of friends", "Stats", "Interests", "Toxicity"]
                     ],
                 ),  
                
@@ -87,7 +87,7 @@ class DashboardBuilder(BuildGraphs):
                     data = self.parser.get_cities_friends(json)
                     return self.build_map_friends(data)
                 
-                elif selected_info == "Static":
+                elif selected_info == "Stats":
                     json = self.load_data("/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json")
                     data = self.parser.get_stat(json)
                     table = self.parser.get_marks(json)
