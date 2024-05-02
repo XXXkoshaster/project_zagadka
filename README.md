@@ -10,9 +10,9 @@ Web scraper of accounts VK
 * work_files - directory containing working files
 
 ## Using 
-* 1) Clone repository 
-* 2) Install necessary libraries with reqrements.txt
-* 3) In work_files craete directory data_base 
-* 4) In work_files craete file .env with your vk api key. Example: API_KEY = "your_key" 
-* 5) In work_files run main.py
-* 6) Use local host
+1) Clone repository 
+2) Install necessary libraries with reqrements.txt
+3) In work_files craete directory data_base 
+4) In work_files craete file .env with your vk api key. Example: API_KEY = "your_key" 
+5) In work_files run main.py
+6) Use local host
