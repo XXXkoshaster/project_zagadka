@@ -1,3 +1,6 @@
+import pandas as pd 
+
+
 def geenders_info(friends): 
     try:
         genders = dict()
@@ -12,6 +15,8 @@ def geenders_info(friends):
                         genders[sex] += 1
                 else:
                     continue
+        
+        genders = pd.DataFrame(genders.items(), columns=["Sex", "Count"])
 
         return genders 
     except Exception as e:

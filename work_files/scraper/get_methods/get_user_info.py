@@ -1,56 +1,34 @@
 import pandas as pd
 
+
 def user_info(data):
-    try:
-        data_general = pd.Series(data, index=["id", "domain", "first_name", "last_name", "sex", "bdate"])
-    except Exception as e:
-        print(f"Ошибка в обработке общей информации пользователя: {e}")
-        data_general =  pd.Series()
-    
-    try:
-        data_country = pd.Series(data["country"]["title"], index=["country"])
-    except Exception as e:
-        print(f"Ошибка в обработке информации о стране пользователя: {e}")
-        data_country =  pd.Series()
+    records = []
 
-    try:
-        data_city = pd.Series(data["city"]["title"], index=["city"])
-    except Exception as e:
-        print(f"Ошибка в обработке информации о городе пользователя: {e}")
-        data_city =  pd.Series()
-    
-    data_univer = pd.Series()
-    data_schools = pd.Series()
+    keys = ["id", "domain", "first_name", "last_name", "sex", "bdate"]
+    for key in keys:
+        value = data.get(key, "Не указано")
+        records.append((key, value))
 
-    try:
-        for i in data.get("universities", []):
-            tmp = pd.Series(i, index=["name", "faculty_name", "chair_name", "graduation"])
-            
-            if "faculty_name" in i.keys():
-                tmp["faculty_name"] = tmp["faculty_name"].rstrip()
-            
-            tmp.rename(index={"name": "university"}, inplace=True)
-            data_univer = pd.concat([data_univer, tmp])
-    except Exception as e:
-        print(f"Ошибка в обработке информации о университете пользователя: {e}")
+    country = data.get("country", {}).get("title", "Не указано")
+    city = data.get("city", {}).get("title", "Не указано")
+    records.append(("country", country))
+    records.append(("city", city))
 
-    try:
-        for i in data.get("schools", []):
-            tmp = pd.Series(i, index=["name", "class", "speciality", "year_from", "year_to"])
-            
-            if "колледж" in i.get("name", "").lower():
-                tmp.rename(index={"name": "kollage"}, inplace=True)
-            else:
-                tmp.rename(index={"name": "school"}, inplace=True)
+    for uni in data.get("universities", []):
+        records.append(("university", uni.get("name", "Не указано").strip()))
+        records.append(("faculty_name", uni.get("faculty_name", "Не указано").strip()))
+        records.append(("chair_name", uni.get("chair_name", "Не указано").strip()))
+        records.append(("graduation", uni.get("graduation", "Не указано")))
 
-            data_schools = pd.concat([data_schools, tmp])
-    except Exception as e:
-        print(f"Ошибка в обработке информации о школе пользователя {e}")
+    for school in data.get("schools", []):
+        school_name = school.get("name", "Не указано").strip()
+        if "колледж" in school_name.lower():
+            school_name = "college"
+        records.append(("school", school_name))
+        records.append(("class", school.get("class", "Не указано")))
+        records.append(("speciality", school.get("speciality", "Не указано")))
+        records.append(("year_from", school.get("year_from", "Не указано")))
+        records.append(("year_to", school.get("year_to", "Не указано")))
 
-    try:
-        data_schools = data_schools[data_schools.notna()]
-        seria = pd.concat([data_general, data_country, data_city, data_schools, data_univer])
-        return seria.to_frame(name='values').reset_index()
-    except Exception as e:
-        print(f"Ошибка в обработке финальной даты: {e}")
-        return pd.DataFrame(columns=['index', 'values'])
+    df = pd.DataFrame(records, columns=["index", "values"])
+    return df

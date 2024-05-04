@@ -23,7 +23,7 @@ class BuildGraphs():
     def build_genders_friends(self, data):
         return html.Div([
             dcc.Graph(
-                figure=px.pie(names=data.keys(), values=data.values())
+                figure=px.pie(names=data["Sex"], values=data["Count"])
             )
         ])
     

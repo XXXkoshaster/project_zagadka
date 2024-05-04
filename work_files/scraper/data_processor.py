@@ -32,9 +32,9 @@ class DataProcessor:
     def gender_convertor(data_friends):
         try:
             if data_friends["sex"] == 2:
-                data_friends["sex"] = "male"
+                data_friends["sex"] = "Мужской"
             elif data_friends["sex"] == 1:
-                data_friends["sex"] = "female"
+                data_friends["sex"] = "Женский"
             else:
                 data_friends["sex"] = None
         except Exception:
