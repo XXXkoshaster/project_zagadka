@@ -43,6 +43,8 @@ class BuildGraphs:
         Колбэк для обновления гистограммы токсичности постов.
     build_project_info()
         Создает компонент для отображения информации о проекте.
+    build_gigachat_response()
+        Создает компонент для отображения краткой информации о пользователе с помощью gigachat.
     """
 
     def __init__(self):
@@ -341,7 +343,28 @@ class BuildGraphs:
         """
         return html.Div([
             html.Br(),
-            html.P("Web server for analysing data vk users."),
-            html.P(["GitHub repo: ", html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
+            html.P('Web server for analysing data vk users.'),
+            html.P(['GitHub repo: ', html.A('https://github.com/XXXkoshaster/project_zagadka', href='https://github.com/XXXkoshaster/project_zagadka')])
         ])
 
+    def build_gigachat_response(self, text):
+        """
+        Создает компонент для отображения краткой информации о пользователе с помощью gigachat.
+
+        Parameters
+        ----------
+        text : str
+            Текст ответа от GigaChat.
+
+        Returns
+        -------
+        html.Div
+            Компонент для отображения информации о пользователе.
+        """
+        answer = [html.P(line) for line in text]
+
+        return html.Div([
+            html.Br(),
+            html.H4('Краткая информация о пользователи от GigaChat'),
+            *answer
+        ])

@@ -8,7 +8,7 @@ from scraper.get_methods.get_coordinates import coord_info
 from scraper.get_methods.get_marks import marks_info
 from scraper.get_methods.get_interests import interests_info
 from scraper.get_methods.get_toxic import Toxic
-
+from scraper.get_methods.get_gigachat_answer import get_gigachat_answer
 class UserProfileParser:
     """
     Класс для парсинга и анализа профилей пользователей ВКонтакте.
@@ -193,3 +193,19 @@ class UserProfileParser:
         """
         toxic = Toxic()
         return toxic.toxicity_info(wall)
+
+    def get_gigachat_answer(self, answer):
+        """
+        Возвращает ответ от GigaChat API.
+
+        Parameters
+        ----------
+        answer : dict
+            Ответ от GigaChat API в формате словаря.
+
+        Returns
+        -------
+        list of str
+            Список строк, содержащих текстовое содержание из ответа GigaChat.
+        """
+        return get_gigachat_answer(answer)

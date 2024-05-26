@@ -37,7 +37,7 @@ class VkApp:
             URL профиля пользователя ВКонтакте.
         """
         dotenv.load_dotenv()
-        self.token = os.getenv('API_KEY')
+        self.token = os.getenv('API_KEY_VK')
         self.profile = VkProfile(self.token)
 
         self.user_name = DataProcessor.get_user_id(url)
@@ -68,6 +68,6 @@ class VkApp:
             DataProcessor.save_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/groups_data.json', groups_data['items'])
             DataProcessor.save_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json', wall_data['items'])
 
-# объединение в общий скрипт
+
 if __name__ == '__main__':
     app = VkApp(sys.argv[1])

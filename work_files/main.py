@@ -3,7 +3,7 @@ import json
 import dash_bootstrap_components as dbc
 from create_data_base import VkApp
 from build_graphs import BuildGraphs
-
+from gigachat import GigaChat
 class DashboardBuilder(BuildGraphs):
     """
     Класс для создания и запуска веб-дэшборда с использованием Dash и Plotly.
@@ -72,7 +72,7 @@ class DashboardBuilder(BuildGraphs):
             dcc.Dropdown(
                 id='info_dropdown',
                 options=[
-                    {'label': user, 'value': user} for user in ['Data user', 'Ages of friends', 'Gender of friends', 'Cites of friends', 'Stats', 'Interests', 'Toxicity']
+                    {'label': user, 'value': user} for user in ['Data user', 'Ages of friends', 'Gender of friends', 'Cites of friends', 'Stats', 'Interests', 'Toxicity', 'GigaChat']
                 ],
             ),
 
@@ -144,6 +144,13 @@ class DashboardBuilder(BuildGraphs):
                     json = self.load_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json')
                     data = self.parser.get_toxic(json)
                     return self.build_toxicity(data)
+
+                elif selected_info == 'GigaChat':
+                    chat = GigaChat()
+                    chat.create_request()
+                    json = self.load_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/gigachat_response.json')
+                    data = self.parser.get_gigachat_answer(json)
+                    return self.build_gigachat_response(data)
 
             return html.Div()
 
