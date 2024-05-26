@@ -8,3 +8,4 @@
 * get_stat.py - function to create a DataFrame with statistics of user
 * get_toxic.py - function to create a DataFrame with toxicity of user
 * get_user_info.py - function to create a DataFrame with general info of user
+* get_gigachat_answer - function to create list with GigaChat answers
