@@ -93,7 +93,7 @@ class BuildGraphs:
         """
         return html.Div([
             dcc.Graph(
-                figure=px.pie(names=data["Sex"], values=data["Count"])
+                figure=px.pie(names=data["Sex"], values=data["Count"])  
             )
         ])
 
