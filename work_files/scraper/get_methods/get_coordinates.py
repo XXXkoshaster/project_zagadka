@@ -49,5 +49,5 @@ def coord_info(city, geolocator, cache):
             else:
                 return None, None
     except Exception as e:
-        print(f'Ошибка при получении координат города {city}: {e}')
+        print(f"Ошибка при получении координат города {city}: {e}")
         return None, None

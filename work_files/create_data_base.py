@@ -1,8 +1,10 @@
 import os
-import dotenv
 import sys
+
+import dotenv
 from scraper.data_processor import DataProcessor
 from scraper.take_profile_info import VkProfile
+
 
 class VkApp:
     """
@@ -37,12 +39,12 @@ class VkApp:
             URL профиля пользователя ВКонтакте.
         """
         dotenv.load_dotenv()
-        self.token = os.getenv('API_KEY_VK')
+        self.token = os.getenv("API_KEY_VK")
         self.profile = VkProfile(self.token)
 
         self.user_name = DataProcessor.get_user_id(url)
-        self.user_id = self.profile.get_user_info(self.user_name)[0]['id']
-        self.user_domain = self.profile.get_user_info(self.user_name)[0]['domain']
+        self.user_id = self.profile.get_user_info(self.user_name)[0]["id"]
+        self.user_domain = self.profile.get_user_info(self.user_name)[0]["domain"]
 
         self.run()
 
@@ -63,11 +65,23 @@ class VkApp:
             DataProcessor.convert_friends_data(friends_data)
             DataProcessor.convert_wall_data(wall_data)
 
-            DataProcessor.save_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/user_data.json', user_data[0])
-            DataProcessor.save_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/friends_data.json', friends_data['items'])
-            DataProcessor.save_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/groups_data.json', groups_data['items'])
-            DataProcessor.save_data('/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json', wall_data['items'])
+            DataProcessor.save_data(
+                "/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/user_data.json",
+                user_data[0],
+            )
+            DataProcessor.save_data(
+                "/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/friends_data.json",
+                friends_data["items"],
+            )
+            DataProcessor.save_data(
+                "/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/groups_data.json",
+                groups_data["items"],
+            )
+            DataProcessor.save_data(
+                "/home/xxxkoshaster/Documents/Zagadka/work_files/data_base/wall_data.json",
+                wall_data["items"],
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = VkApp(sys.argv[1])

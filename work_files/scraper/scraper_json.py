@@ -1,14 +1,16 @@
 from geopy.geocoders import Nominatim
-from scraper.get_methods.get_user_info import user_info
 from scraper.get_methods.get_ages_friends import ages_info
-from scraper.get_methods.get_genders_friends import geenders_info
 from scraper.get_methods.get_cities_friends import cities_info
-from scraper.get_methods.get_stat import stat_info
 from scraper.get_methods.get_coordinates import coord_info
-from scraper.get_methods.get_marks import marks_info
-from scraper.get_methods.get_interests import interests_info
-from scraper.get_methods.get_toxic import Toxic
+from scraper.get_methods.get_genders_friends import geenders_info
 from scraper.get_methods.get_gigachat_answer import get_gigachat_answer
+from scraper.get_methods.get_interests import interests_info
+from scraper.get_methods.get_marks import marks_info
+from scraper.get_methods.get_stat import stat_info
+from scraper.get_methods.get_toxic import Toxic
+from scraper.get_methods.get_user_info import user_info
+
+
 class UserProfileParser:
     """
     Класс для парсинга и анализа профилей пользователей ВКонтакте.
@@ -47,7 +49,7 @@ class UserProfileParser:
         Инициализирует кэш и геолокатор.
         """
         self.cache = {}
-        self.geolocator = Nominatim(user_agent='geoapiExercises')
+        self.geolocator = Nominatim(user_agent="geoapiExercises")
 
     def get_user_info(self, data):
         """

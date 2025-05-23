@@ -1,7 +1,9 @@
+import os
+import uuid
+
 import dotenv
 import requests
-import uuid
-import os
+
 
 class GigaChatToken:
     """
@@ -19,9 +21,9 @@ class GigaChatToken:
         Загружает переменные окружения и устанавливает API ключ.
         """
         dotenv.load_dotenv()
-        self.api_key = os.getenv('API_KEY_GIGA_CHAT')
+        self.api_key = os.getenv("API_KEY_GIGA_CHAT")
 
-    def get_token(self, auth_token, scope='GIGACHAT_API_PERS'):
+    def get_token(self, auth_token, scope="GIGACHAT_API_PERS"):
         """
         Выполняет POST-запрос к эндпоинту для получения токена.
 
@@ -42,15 +44,13 @@ class GigaChatToken:
         url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 
         headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json',
-            'RqUID': rq_uid,
-            'Authorization': f'Basic {auth_token}'
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+            "RqUID": rq_uid,
+            "Authorization": f"Basic {auth_token}",
         }
 
-        payload = {
-            'scope': scope
-        }
+        payload = {"scope": scope}
 
         try:
             response = requests.post(url, headers=headers, data=payload, verify=False)
@@ -75,7 +75,7 @@ class GigaChatToken:
         else:
             token_response = self.get_token(self.api_key)
             if token_response:
-                giga_token = token_response.get('access_token')
+                giga_token = token_response.get("access_token")
                 if giga_token:
                     return giga_token
                 else:

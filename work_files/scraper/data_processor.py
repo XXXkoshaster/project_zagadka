@@ -1,6 +1,7 @@
+import json
 import re
 from datetime import datetime
-import json
+
 
 class DataProcessor:
     """
@@ -50,10 +51,10 @@ class DataProcessor:
         'username'
         """
         try:
-            match = re.search(r'vk.com/(\w+)', url)
+            match = re.search(r"vk.com/(\w+)", url)
             return match.group(1)
         except Exception as e:
-            print(f'Некорректный URL или отсутствует идентификатор пользователя: {e}')
+            print(f"Некорректный URL или отсутствует идентификатор пользователя: {e}")
 
     @staticmethod
     def save_data(file_path, data):
@@ -78,10 +79,10 @@ class DataProcessor:
         >>> DataProcessor.save_data('data.json', data)
         """
         try:
-            with open(file_path, 'w') as file:
+            with open(file_path, "w") as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
         except Exception as e:
-            print(f'Ошибка при сохранении файла: {e}')
+            print(f"Ошибка при сохранении файла: {e}")
 
     @staticmethod
     def time_convertor(data_wall):
@@ -106,9 +107,9 @@ class DataProcessor:
         '2021-03-31 12:00:00'
         """
         try:
-            date_time = datetime.utcfromtimestamp(data_wall['date'])
-            formatted_date = date_time.strftime('%Y-%m-%d %H:%M:%S')
-            data_wall['date'] = formatted_date
+            date_time = datetime.utcfromtimestamp(data_wall["date"])
+            formatted_date = date_time.strftime("%Y-%m-%d %H:%M:%S")
+            data_wall["date"] = formatted_date
         except Exception:
             print('Отсутствует ключ "date" в объекте данных')
 
@@ -135,12 +136,12 @@ class DataProcessor:
         'Мужской'
         """
         try:
-            if data_friends['sex'] == 2:
-                data_friends['sex'] = 'Мужской'
-            elif data_friends['sex'] == 1:
-                data_friends['sex'] = 'Женский'
+            if data_friends["sex"] == 2:
+                data_friends["sex"] = "Мужской"
+            elif data_friends["sex"] == 1:
+                data_friends["sex"] = "Женский"
             else:
-                data_friends['sex'] = None
+                data_friends["sex"] = None
         except Exception:
             print('Отсутствует ключ "sex" в объекте данных')
 
@@ -182,7 +183,7 @@ class DataProcessor:
         >>> friends['items'][1]['sex']
         'Женский'
         """
-        for friend in friends_data['items']:
+        for friend in friends_data["items"]:
             DataProcessor.gender_convertor(friend)
 
     @staticmethod
@@ -202,5 +203,5 @@ class DataProcessor:
         >>> wall['items'][0]['date']
         '2021-03-31 12:00:00'
         """
-        for post in wall_data['items']:
+        for post in wall_data["items"]:
             DataProcessor.time_convertor(post)

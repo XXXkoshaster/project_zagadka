@@ -15,9 +15,9 @@ def get_gigachat_answer(answer):
     text = []
     try:
         for key in answer:
-            content = answer[key]['choices'][0]['message']['content']
+            content = answer[key]["choices"][0]["message"]["content"]
             text.append(content)
         return text
     except Exception as e:
-        print(f'Ошибка в обработке ответа GigaChat: {e}')
+        print(f"Ошибка в обработке ответа GigaChat: {e}")
         return []
