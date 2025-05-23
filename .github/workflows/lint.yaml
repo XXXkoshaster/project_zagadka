@@ -46,10 +46,19 @@ jobs:
         uses: super-linter/super-linter@v7.4.0
         env: 
           VALIDATE_ALL_CODEBASE: true
-          VALIDATE_PYTHON: false
+          VALIDATE_PYTHON: true
           VALIDATE_MARKDOWN: false
           VALIDATE_GITHUB_ACTIONS: false
           VALIDATE_YAML: false 
+          VALIDATE_MARKDOWN_PRETTIER: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_PYTHON_BLACK: false
+          VALIDATE_PYTHON_PYLINT: false
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_PYINK: false
+          VALIDATE_YAML_PRETTIER: false
           FIX_PYTHON_RUFF: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
