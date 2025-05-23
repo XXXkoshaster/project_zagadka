@@ -110,7 +110,7 @@ class DataProcessor:
             formatted_date = date_time.strftime('%Y-%m-%d %H:%M:%S')
             data_wall['date'] = formatted_date
         except Exception:
-            print(f'Отсутствует ключ "date" в объекте данных')
+            print('Отсутствует ключ "date" в объекте данных')
 
     @staticmethod
     def gender_convertor(data_friends):
@@ -142,7 +142,7 @@ class DataProcessor:
             else:
                 data_friends['sex'] = None
         except Exception:
-            print(f'Отсутствует ключ "sex" в объекте данных')
+            print('Отсутствует ключ "sex" в объекте данных')
 
     @staticmethod
     def convert_user_data(user_data):
