@@ -70,7 +70,6 @@ jobs:
           commit_message: "chore: fix linting issues"
           commit_user_name: Yan0vich
           commit_user_email: vorobyovgleb14@gmail.com
-          add_options: '-a'
 
       - name: Check for changes
         run: git status
