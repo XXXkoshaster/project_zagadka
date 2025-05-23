@@ -5,7 +5,7 @@ def stat_info(wall):
     """
     Вычисляет количество постов на стене пользователя по месяцам.
 
-    Эта функция принимает список постов на стене пользователя и возвращает DataFrame с количеством постов, 
+    Эта функция принимает список постов на стене пользователя и возвращает DataFrame с количеством постов,
     сгруппированных по месяцам.
 
     Parameters
@@ -48,14 +48,14 @@ def stat_info(wall):
         posts = dict()
 
         for i in wall:
-            if 'date' in i.keys():
-                date = i['date'][:7]
+            if "date" in i.keys():
+                date = i["date"][:7]
                 if date not in posts:
                     posts[date] = 1
                 else:
                     posts[date] += 1
 
-        return pd.DataFrame(posts.items(), columns=['Mounth', 'Count posts'])
+        return pd.DataFrame(posts.items(), columns=["Mounth", "Count posts"])
     except Exception as e:
-        print(f'Ошибка в обработке cтатистики пользователя: {e}')
-        return pd.DataFrame(lumns=['Mounth', 'Count posts'])
+        print(f"Ошибка в обработке cтатистики пользователя: {e}")
+        return pd.DataFrame(lumns=["Mounth", "Count posts"])

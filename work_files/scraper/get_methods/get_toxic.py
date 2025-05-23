@@ -1,7 +1,8 @@
-import torch
 import re
+
 import pandas as pd
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
 class Toxic:
@@ -31,7 +32,7 @@ class Toxic:
         """
         Инициализирует токенизатор и модель для определения токсичности текстов.
         """
-        MODEL = 'cointegrated/rubert-tiny-toxicity'
+        MODEL = "cointegrated/rubert-tiny-toxicity"
         self.tokinizer = AutoTokenizer.from_pretrained(MODEL)
         self.model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
@@ -52,7 +53,9 @@ class Toxic:
             Вероятность каждого типа токсичности для каждого текста или агрегированная вероятность токсичности.
         """
         with torch.no_grad():
-            inputs = self.tokinizer(text, return_tensors='pt', truncation=True, padding=True).to(self.model.device)
+            inputs = self.tokinizer(
+                text, return_tensors="pt", truncation=True, padding=True
+            ).to(self.model.device)
             proba = torch.sigmoid(self.model(**inputs).logits).cpu().numpy()
         if isinstance(text, str):
             proba = proba[0]
@@ -75,15 +78,15 @@ class Toxic:
         pd.DataFrame
             DataFrame с одним столбцом 'Text', содержащим обработанные тексты постов.
         """
-        posts = pd.DataFrame(columns=['Text'])
+        posts = pd.DataFrame(columns=["Text"])
 
         for i in wall:
-            if (text := i['text']):
-                text = re.sub(r'[\n\t]', ' ', text)
-                posts.loc[len(posts.index)] = re.sub(r'[^\w\s]', '', text)
-            elif ('copy_history' in i) and (text := i['copy_history'][0]['text']):
-                text = re.sub(r'[\n\t]', ' ', text)
-                posts.loc[len(posts.index)] = re.sub(r'[^\w\s]', '', text)
+            if text := i["text"]:
+                text = re.sub(r"[\n\t]", " ", text)
+                posts.loc[len(posts.index)] = re.sub(r"[^\w\s]", "", text)
+            elif ("copy_history" in i) and (text := i["copy_history"][0]["text"]):
+                text = re.sub(r"[\n\t]", " ", text)
+                posts.loc[len(posts.index)] = re.sub(r"[^\w\s]", "", text)
 
         return posts
 
@@ -101,12 +104,12 @@ class Toxic:
         pd.Series
             Строка DataFrame с добавленными вероятностями токсичности.
         """
-        proba = self.text_toxicity(row['Text'])
-        row['Non-toxic'] = proba[0]
-        row['Insult'] = proba[1]
-        row['Obscenity'] = proba[2]
-        row['Threat'] = proba[3]
-        row['Dangerous'] = proba[4]
+        proba = self.text_toxicity(row["Text"])
+        row["Non-toxic"] = proba[0]
+        row["Insult"] = proba[1]
+        row["Obscenity"] = proba[2]
+        row["Threat"] = proba[3]
+        row["Dangerous"] = proba[4]
         return row
 
     def toxicity_info(self, wall):
@@ -125,12 +128,15 @@ class Toxic:
         """
         posts = self.process_set(wall)
 
-        posts['Non-toxic'] = 0
-        posts['Insult'] = 0
-        posts['Obscenity'] = 0
-        posts['Threat'] = 0
-        posts['Dangerous'] = 0
+        posts["Non-toxic"] = 0
+        posts["Insult"] = 0
+        posts["Obscenity"] = 0
+        posts["Threat"] = 0
+        posts["Dangerous"] = 0
 
         posts = posts.apply(self.apply_toxicity, axis=1)
 
-        return pd.DataFrame(posts[['Non-toxic', 'Insult', 'Obscenity', 'Threat', 'Dangerous']].mean(), columns=['Probability'])
+        return pd.DataFrame(
+            posts[["Non-toxic", "Insult", "Obscenity", "Threat", "Dangerous"]].mean(),
+            columns=["Probability"],
+        )

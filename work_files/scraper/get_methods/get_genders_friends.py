@@ -46,8 +46,8 @@ def geenders_info(friends):
         genders = dict()
 
         for i in friends:
-            if 'sex' in i.keys():
-                sex = i['sex']
+            if "sex" in i.keys():
+                sex = i["sex"]
                 if sex:
                     if sex not in genders:
                         genders[sex] = 1
@@ -56,9 +56,9 @@ def geenders_info(friends):
                 else:
                     continue
 
-        genders = pd.DataFrame(genders.items(), columns=['Sex', 'Count'])
+        genders = pd.DataFrame(genders.items(), columns=["Sex", "Count"])
 
         return genders
     except Exception as e:
-        print(f'Ошибка в обработке пола пользователя: {e}')
+        print(f"Ошибка в обработке пола пользователя: {e}")
         return dict()

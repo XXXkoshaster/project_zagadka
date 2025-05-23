@@ -1,5 +1,6 @@
 import vk_api
 
+
 class VkProfile:
     """
     Класс для взаимодействия с API ВКонтакте и получения информации о профиле пользователя.
@@ -57,11 +58,14 @@ class VkProfile:
             Возникает при других ошибках.
         """
         try:
-            return self.api.users.get(user_ids=user_id, fields='domain,sex,bdate,city,country,site,activities,interests,schools,universities')
+            return self.api.users.get(
+                user_ids=user_id,
+                fields="domain,sex,bdate,city,country,site,activities,interests,schools,universities",
+            )
         except vk_api.ApiError as e:
-            print(f'Ошибка API ВКонтакте при запросе информации о пользователе: {e}')
+            print(f"Ошибка API ВКонтакте при запросе информации о пользователе: {e}")
         except Exception as e:
-            print(f'Произошла ошибка при запросе информации о пользователе: {e}')
+            print(f"Произошла ошибка при запросе информации о пользователе: {e}")
 
     def get_friends_info(self, user_id):
         """
@@ -85,11 +89,17 @@ class VkProfile:
             Возникает при других ошибках.
         """
         try:
-            return self.api.friends.get(user_id=user_id, fields='sex,bdate,city,country')
+            return self.api.friends.get(
+                user_id=user_id, fields="sex,bdate,city,country"
+            )
         except vk_api.ApiError as e:
-            print(f'Ошибка API ВКонтакте при запросе информации о друзьях пользователя: {e}')
+            print(
+                f"Ошибка API ВКонтакте при запросе информации о друзьях пользователя: {e}"
+            )
         except Exception as e:
-            print(f'Произошла ошибка при запросе информации о друзьях пользователя: {e}')
+            print(
+                f"Произошла ошибка при запросе информации о друзьях пользователя: {e}"
+            )
 
     def get_groups_info(self, user_id):
         """
@@ -113,11 +123,17 @@ class VkProfile:
             Возникает при других ошибках.
         """
         try:
-            return self.api.groups.get(user_id=user_id, extended=1, fields='activity,city,country,site')
+            return self.api.groups.get(
+                user_id=user_id, extended=1, fields="activity,city,country,site"
+            )
         except vk_api.ApiError as e:
-            print(f'Ошибка API ВКонтакте при запросе информации о сообществах пользователя: {e}')
+            print(
+                f"Ошибка API ВКонтакте при запросе информации о сообществах пользователя: {e}"
+            )
         except Exception as e:
-            print(f'Произошла ошибка при запросе информации о сообществах пользователя: {e}')
+            print(
+                f"Произошла ошибка при запросе информации о сообществах пользователя: {e}"
+            )
 
     def get_wall_info(self, user_id, domain):
         """
@@ -143,8 +159,12 @@ class VkProfile:
             Возникает при других ошибках.
         """
         try:
-            return self.api.wall.get(user_id=user_id, domain=domain, count=100, filter='all')
+            return self.api.wall.get(
+                user_id=user_id, domain=domain, count=100, filter="all"
+            )
         except vk_api.ApiError as e:
-            print(f'Ошибка API ВКонтакте при запросе информации о стене пользователя: {e}')
+            print(
+                f"Ошибка API ВКонтакте при запросе информации о стене пользователя: {e}"
+            )
         except Exception as e:
-            print(f'Произошла ошибка при запросе информации о стене пользователя: {e}')
+            print(f"Произошла ошибка при запросе информации о стене пользователя: {e}")

@@ -47,8 +47,8 @@ def cities_info(friends):
         cities = dict()
 
         for i in friends:
-            if 'city' in i.keys():
-                city = i['city']['title']
+            if "city" in i.keys():
+                city = i["city"]["title"]
 
                 if city not in cities:
                     cities[city] = 1
@@ -57,8 +57,8 @@ def cities_info(friends):
             else:
                 continue
 
-        cities = pd.DataFrame(cities.items(), columns=['City', 'Count'])
+        cities = pd.DataFrame(cities.items(), columns=["City", "Count"])
         return cities
     except Exception as e:
-        print(f'Ошибка в обработке города пользователя: {e}')
-        return pd.DataFrame(columns=['City', 'Count'])
+        print(f"Ошибка в обработке города пользователя: {e}")
+        return pd.DataFrame(columns=["City", "Count"])
