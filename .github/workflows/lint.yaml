@@ -62,14 +62,20 @@ jobs:
           VALIDATE_YAML_PRETTIER: false
           FIX_PYTHON_RUFF: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Check for changes
+        run: git status
 
       - name: Commit and push 
+        if: >
+            github.event_name == 'pull_request' &&
+            github.ref_name != github.event.repository.default_branch
+          
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
           commit_message: "chore: fix linting issues"
           commit_user_name: Yan0vich
           commit_user_email: vorobyovgleb14@gmail.com
+          add_options: '-A'
 
-      - name: Check for changes
-        run: git status
