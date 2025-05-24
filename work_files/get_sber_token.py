@@ -15,7 +15,7 @@ class GigaChatToken:
         API ключ для доступа к GigaChat API.
     """
 
-    def __init__(self):
+    def __init__(self)   :
         """
         Инициализация класса GigaChatToken.
         Загружает переменные окружения и устанавливает API ключ.
@@ -23,7 +23,7 @@ class GigaChatToken:
         dotenv.load_dotenv()
         self.api_key = os.getenv("API_KEY_GIGA_CHAT")
 
-    def get_token(self, auth_token, scope="GIGACHAT_API_PERS"):
+    def get_token(self, auth_token, scope="GIGACHAT_API_PERS"):             
         """
         Выполняет POST-запрос к эндпоинту для получения токена.
 

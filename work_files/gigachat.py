@@ -73,7 +73,7 @@ class GigaChat:
             or df_groups is None
             or df_wall is None
         ):
-            print("Ошибка при загрузке данных.")
+            print(f"Ошибка при загрузке данных.")
             return None, None, None, None, None, None, None, None
 
         try:
