@@ -1,7 +1,11 @@
 name: Lint Code
 
-on: [push, pull_request]
-
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+  
 permissions: 
   contents: read
 
@@ -62,9 +66,6 @@ jobs:
           FIX_PYTHON_ISORT: true
           FIX_PYTHON_RUFF: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Check for changes
-        run: git status
 
       - name: Commit and push 
         if: >
@@ -77,5 +78,5 @@ jobs:
           commit_message: "chore: fix linting issues"
           commit_user_name: Yan0vich
           commit_user_email: vorobyovgleb14@gmail.com
-          add_options: '-A'
+          status_options: '--untracked-files=no'
 
